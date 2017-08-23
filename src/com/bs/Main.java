@@ -16,7 +16,7 @@ import java.util.Vector;
 //import static net.servicestack.func.Func.*;
 
 class Main {
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
     private JTable table;
 
     private TableModel model;
@@ -94,6 +94,11 @@ class Main {
         return res;
     }
 
+    /**
+     * @return Bus data list from txt file
+     * @throws IOException    IOException
+     * @throws ParseException ParseException
+     */
     private static List fileToList() throws IOException, ParseException {
         List res = new ArrayList<BusData>();
 //        BufferedReader br = new BufferedReader(new FileReader(Main.class.getResource("").getPath() + "\\data.txt"));
@@ -106,13 +111,13 @@ class Main {
             if (arr.length == 0 || arr.length < 8 || arr[6].isEmpty() ||
                     arr[7].isEmpty()) continue;
             BusData data = new BusData();
-            data.LineCode = arr[1];
-            data.Direction = Direction.values()[Integer.parseInt(arr[2])];
-            data.StationNum = Integer.parseInt(arr[3]);
-            data.StationCode = arr[4];
-            data.VehCode = arr[5];
-            data.EstimatedTime = simpleDateFormat.parse(arr[6]);
-            data.ProcessTime = simpleDateFormat.parse(arr[7]);
+            data.setLineCode(arr[1]);
+            data.setDirection(Direction.values()[Integer.parseInt(arr[2])]);
+            data.setStationNum(Integer.parseInt(arr[3]));
+            data.setStationCode(arr[4]);
+            data.setVehCode(arr[5]);
+            data.setEstimatedTime(dateFormat.parse(arr[6]));
+            data.setProcessTime(dateFormat.parse(arr[7]));
 //            data.ProcessTime.setSeconds(0);
 //            Calendar cal=Calendar.getInstance(Locale.CHINA);
 //            cal.setTime(data.ProcessTime);
