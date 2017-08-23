@@ -102,7 +102,7 @@ class Main {
 
     /**
      * @return Bus data list from txt file
-     * @throws IOException IOException
+     * @throws IOException    IOException
      * @throws ParseException ParseException
      */
     private static List fileToList() throws IOException, ParseException {
