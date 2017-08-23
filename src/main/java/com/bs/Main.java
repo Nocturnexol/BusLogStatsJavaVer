@@ -7,7 +7,6 @@ import net.servicestack.func.Tuple;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -27,24 +26,22 @@ class Main {
     private Main(List list) {
         JTabbedPane tabbedPane = new JTabbedPane();
         JFrame frame = new JFrame("BusDataStats");
-        TableModel model = new TableModel(list);
-        JTable table = new JTable(model);
-        table.setBackground(Color.white);
-        TableColumnModel tcm = table.getColumnModel();
-        tcm.getColumn(0).setPreferredWidth(50);
-        tcm.getColumn(1).setPreferredWidth(100);
+        TableModelStats model = new TableModelStats(list);
+        JTable tableStats = new JTable(model);
+        tableStats.setBackground(Color.white);
         DefaultTableCellRenderer tcr = new DefaultTableCellRenderer();
         tcr.setHorizontalAlignment(SwingConstants.CENTER);
-        table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        table.setDefaultRenderer(Object.class, tcr);
-        JScrollPane s_pan = new JScrollPane(table);
-
-        frame.getContentPane().add(s_pan, BorderLayout.CENTER);
+        tableStats.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        tableStats.setDefaultRenderer(Object.class, tcr);
+        JScrollPane spStats = new JScrollPane(tableStats);
+        JScrollPane spMatrix = new JScrollPane();
+        tabbedPane.add(spStats, "统计表");
+        tabbedPane.add(spMatrix, "矩阵表");
+        frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(800, 530);
+        frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
     }
 
     public static void main(String[] args) throws IOException, ParseException {
@@ -136,12 +133,12 @@ class Main {
     }
 }
 
-class TableModel extends AbstractTableModel {
+class TableModelStats extends AbstractTableModel {
     private Vector content = null;
 
     private String[] title_name = {"TimeDiffMin", "Count"};
 
-    TableModel(List list) {
+    TableModelStats(List list) {
         content = new Vector(list.size());
         for (Object o : list) {
             Tuple tuple = (Tuple<Long, Group<Long, BusDataStats>>) o;
