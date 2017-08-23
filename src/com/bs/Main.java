@@ -7,6 +7,7 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -95,9 +96,10 @@ class Main {
 
     private static List fileToList() throws IOException, ParseException {
         List res = new ArrayList<BusData>();
-        BufferedReader br = new BufferedReader(new FileReader(Main.class.getResource("").getPath() + "\\data.txt"));
+//        BufferedReader br = new BufferedReader(new FileReader(Main.class.getResource("").getPath() + "\\data.txt"));
 //        BufferedReader br=new BufferedReader(new InputStreamReader(Main.class.getClass().getResourceAsStream("data
 // .txt")));
+        BufferedReader br = new BufferedReader(new FileReader(System.getProperty("user.dir") + "\\data.txt"));
         String line;
         while ((line = br.readLine()) != null) {
             String[] arr = line.split("\\|");
