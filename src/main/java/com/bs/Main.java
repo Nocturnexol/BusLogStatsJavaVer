@@ -22,14 +22,12 @@ import static net.servicestack.func.Func.*;
 
 class Main {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-    private JTable table;
-
-    private TableModel model;
 
     private Main(List list) {
+        JTabbedPane tabbedPane = new JTabbedPane();
         JFrame frame = new JFrame("BusDataStats");
-        model = new TableModel(list);
-        table = new JTable(model);
+        TableModel model = new TableModel(list);
+        JTable table = new JTable(model);
         table.setBackground(Color.white);
         TableColumnModel tcm = table.getColumnModel();
         tcm.getColumn(0).setPreferredWidth(50);
@@ -100,7 +98,7 @@ class Main {
 
     /**
      * @return Bus data list from txt file
-     * @throws IOException    IOException
+     * @throws IOException IOException
      * @throws ParseException ParseException
      */
     private static List fileToList() throws IOException, ParseException {
@@ -135,9 +133,6 @@ class Main {
 }
 
 class TableModel extends AbstractTableModel {
-
-    private static final long serialVersionUID = -7495940408592595397L;
-
     private Vector content = null;
 
     private String[] title_name = {"TimeDiffMin", "Count"};
@@ -157,22 +152,6 @@ class TableModel extends AbstractTableModel {
         content.add(v);
     }
 
-    /**
-     * 让表格中某些值可修改，但需要setValueAt(Object value, int row, int col)方法配合才能使修改生效
-     */
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex != 0;
-    }
-
-    /**
-     * 使修改的内容生效
-     */
-    public void setValueAt(Object value, int row, int col) {
-        ((Vector) content.get(row)).remove(col);
-        ((Vector) content.get(row)).add(col, value);
-        this.fireTableCellUpdated(row, col);
-    }
-
     public String getColumnName(int col) {
         return title_name[col];
     }
@@ -189,12 +168,6 @@ class TableModel extends AbstractTableModel {
         return ((Vector) content.get(row)).get(col);
     }
 
-    /**
-     * 返回数据类型
-     */
-    public Class getColumnClass(int col) {
-        return getValueAt(0, col).getClass();
-    }
 }
 
 
