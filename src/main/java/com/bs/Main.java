@@ -1,6 +1,8 @@
 package com.bs;
 
 import net.servicestack.func.Function;
+import net.servicestack.func.Group;
+import net.servicestack.func.Tuple;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -24,80 +26,76 @@ class Main {
 
     private TableModel model;
 
-    private Main() {
-        JFrame frame = new JFrame("JTableTest");
-        JPanel pane = new JPanel();
-        JButton button_1 = new JButton("清除数据");
-        button_1.addActionListener(e -> removeData());
-        JButton button_2 = new JButton("添加数据");
-//        button_2.addActionListener(e -> addData());
-        JButton button_3 = new JButton("保存数据");
-        button_3.addActionListener(e -> saveData());
-        pane.add(button_1);
-        pane.add(button_2);
-        pane.add(button_3);
-        model = new TableModel(20);
+    private Main(List list) {
+        JFrame frame = new JFrame("BusDataStats");
+        model = new TableModel(list);
         table = new JTable(model);
         table.setBackground(Color.white);
-//        String[] age = {"16", "17", "18", "19", "20", "21", "22"};
-//        JComboBox com = new JComboBox(age);
         TableColumnModel tcm = table.getColumnModel();
-//        tcm.getColumn(3).setCellEditor(new DefaultCellEditor(com));
         tcm.getColumn(0).setPreferredWidth(50);
         tcm.getColumn(1).setPreferredWidth(100);
-//        tcm.getColumn(2).setPreferredWidth(50);
 
         JScrollPane s_pan = new JScrollPane(table);
 
         frame.getContentPane().add(s_pan, BorderLayout.CENTER);
-//        frame.getContentPane().add(pane, BorderLayout.NORTH);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(300, 200);
+        frame.setSize(800, 530);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
     }
 
-//    private void addData() {
-//        model.addRow("李逵", true, "19");
-//        table.updateUI();
-//    }
-
-    private void removeData() {
-        model.removeRows(0, model.getRowCount());
-        table.updateUI();
-    }
-
-    // 保存数据，暂时是将数据从控制台显示出来
-    private void saveData() {
-        int col = model.getColumnCount();
-        int row = model.getRowCount();
-        for (int i = 0; i < col; i++) {
-            System.out.print(model.getColumnName(i) + "\t");
-        }
-        System.out.print("\r\n");
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < col; j++) {
-                System.out.print(model.getValueAt(i, j) + "\t");
-            }
-            System.out.print("\r\n");
-        }
-        System.out.println("------------------------------------");
-    }
-
     public static void main(String[] args) throws IOException, ParseException {
         // write your code here
-        new Main();
         List srcList = getSrcList();
+        List statsList = map(groupBy(srcList, BusDataStats::getTimeDiffMin), (Function<Group<Long, BusDataStats>,
+                Tuple<Long, Group<Long, BusDataStats>>>) g -> new Tuple<>(g.key, g));
+
+        new Main(orderBy(statsList, (Function<Tuple<Long, Group<Long, BusDataStats>>, Comparable>) t -> t.A));
         System.out.println(srcList.size());
     }
 
     private static List getSrcList() throws IOException, ParseException {
-        List res = fileToList();
-        List orderedRes = orderByAll(res,
-                (a, b) -> a.getLineCode().compareTo(b.getLineCode()),
-                (Comparator<BusData>) (a, b) -> b.getDirection().compareTo(a.getDirection())
-        );
-        return res;
+        List fileList = fileToList();
+        List list = orderByAll(fileList, Comparator.comparing(BusData::getLineCode), Comparator.comparing
+                (BusData::getDirection), Comparator.comparing(BusData::getStationNum), Comparator.comparing
+                (BusData::getStationCode), Comparator.comparing(BusData::getVehCode), Comparator.comparing
+                (BusData::getProcessTime));
+        List srcList = new ArrayList<BusData>();
+        List temp = new ArrayList<BusData>();
+        while (list.size() > 0) {
+            for (Object data : list) {
+                BusData last = (BusData) last(temp);
+                if (last == null) {
+                    temp.add(data);
+                    continue;
+                }
+                long diff = (((BusData) data).getProcessTime().getTime() - last.getProcessTime().getTime()) / (1000 *
+                        60);
+                diff = diff < 0 ? diff + 1440 : diff;
+                if (diff > 30)
+                    break;
+                temp.add(data);
+            }
+            if (temp.size() > 1) {
+                BusData first = (BusData) first(temp);
+                BusDataStats stats = new BusDataStats();
+                stats.setLineCode(first.getLineCode());
+                stats.setDirection(first.getDirection());
+                stats.setStationNum(first.getStationNum());
+                stats.setStationCode(first.getStationCode());
+                stats.setVehCode(first.getVehCode());
+                stats.setFirstEstimatedTime(first.getEstimatedTime());
+                stats.setFirstProcessTime(first.getProcessTime());
+                stats.setLastEstimatedTime(((BusData) last(temp)).getEstimatedTime());
+                stats.setLastProcessTime(((BusData) last(temp)).getProcessTime());
+                if (!((stats.getTimeDiffMin()) < -30))
+                    srcList.add(stats);
+            }
+            list = skip(list, temp.size());
+            temp.clear();
+        }
+        return srcList;
     }
 
     /**
@@ -144,27 +142,19 @@ class TableModel extends AbstractTableModel {
 
     private String[] title_name = {"TimeDiffMin", "Count"};
 
-    TableModel(int count) {
-        content = new Vector(count);
+    TableModel(List list) {
+        content = new Vector(list.size());
+        for (Object o : list) {
+            Tuple tuple = (Tuple<Long, Group<Long, BusDataStats>>) o;
+            addRow((long) tuple.A, ((Group<Long, BusDataStats>) tuple.B).items.size());
+        }
     }
 
-    void addRow(int diffMin, int count) {
+    void addRow(long diffMin, int count) {
         Vector v = new Vector(4);
         v.add(0, diffMin);
         v.add(1, count);
         content.add(v);
-    }
-
-    public void removeRow(int row) {
-        content.remove(row);
-    }
-
-    void removeRows(int row, int count) {
-        for (int i = 0; i < count; i++) {
-            if (content.size() > row) {
-                content.remove(row);
-            }
-        }
     }
 
     /**
