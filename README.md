@@ -1,2 +1,2 @@
 # BusLogStatsJavaVer
-BusLogStats of Java version
+BusLogStats of Java implementation
