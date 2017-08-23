@@ -6,6 +6,7 @@ import net.servicestack.func.Tuple;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.io.BufferedReader;
@@ -32,7 +33,10 @@ class Main {
         TableColumnModel tcm = table.getColumnModel();
         tcm.getColumn(0).setPreferredWidth(50);
         tcm.getColumn(1).setPreferredWidth(100);
-
+        DefaultTableCellRenderer tcr = new DefaultTableCellRenderer();
+        tcr.setHorizontalAlignment(SwingConstants.CENTER);
+        table.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        table.setDefaultRenderer(Object.class, tcr);
         JScrollPane s_pan = new JScrollPane(table);
 
         frame.getContentPane().add(s_pan, BorderLayout.CENTER);
