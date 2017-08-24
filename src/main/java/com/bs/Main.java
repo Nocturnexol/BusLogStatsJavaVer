@@ -1,9 +1,5 @@
 package com.bs;
 
-import net.servicestack.func.Function;
-import net.servicestack.func.Group;
-import net.servicestack.func.Tuple;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
