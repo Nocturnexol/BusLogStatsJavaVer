@@ -88,11 +88,6 @@ class Main {
             data.setVehCode(arr[5]);
             data.setEstimatedTime(dateFormat.parse(arr[6]));
             data.setProcessTime(dateFormat.parse(arr[7]));
-//            data.ProcessTime.setSeconds(0);
-//            Calendar cal=Calendar.getInstance(Locale.CHINA);
-//            cal.setTime(data.ProcessTime);
-//            cal.set(Calendar.SECOND,0);
-//            data.ProcessTime=cal.getTime();
             res.add(data);
         }
         br.close();
