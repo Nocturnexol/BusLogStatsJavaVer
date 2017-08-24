@@ -4,10 +4,6 @@ import net.servicestack.func.Function;
 import net.servicestack.func.Group;
 import net.servicestack.func.Tuple;
 
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -16,41 +12,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Vector;
 
 import static net.servicestack.func.Func.*;
 
 class Main {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
-    private Main(List list) {
-        JTabbedPane tabbedPane = new JTabbedPane();
-        JFrame frame = new JFrame("BusDataStats");
-        TableModelStats model = new TableModelStats(list);
-        JTable tableStats = new JTable(model);
-        tableStats.setBackground(Color.white);
-        DefaultTableCellRenderer tcr = new DefaultTableCellRenderer();
-        tcr.setHorizontalAlignment(SwingConstants.CENTER);
-        tableStats.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        tableStats.setDefaultRenderer(Object.class, tcr);
-        JScrollPane spStats = new JScrollPane(tableStats);
-        JScrollPane spMatrix = new JScrollPane();
-        tabbedPane.add(spStats, "统计表");
-        tabbedPane.add(spMatrix, "矩阵表");
-        frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
-
     public static void main(String[] args) throws IOException, ParseException {
         // write your code here
         List srcList = getSrcList();
-        List statsList = map(groupBy(srcList, BusDataStats::getTimeDiffMin), (Function<Group<Long, BusDataStats>,
-                Tuple<Long, Group<Long, BusDataStats>>>) g -> new Tuple<>(g.key, g));
-
-        new Main(orderBy(statsList, (Function<Tuple<Long, Group<Long, BusDataStats>>, Comparable>) t -> t.A));
+        new StatsFrame(srcList);
         System.out.println(srcList.size());
     }
 
@@ -133,42 +104,6 @@ class Main {
     }
 }
 
-class TableModelStats extends AbstractTableModel {
-    private Vector content = null;
 
-    private String[] title_name = {"TimeDiffMin", "Count"};
-
-    TableModelStats(List list) {
-        content = new Vector(list.size());
-        for (Object o : list) {
-            Tuple tuple = (Tuple<Long, Group<Long, BusDataStats>>) o;
-            addRow((long) tuple.A, ((Group<Long, BusDataStats>) tuple.B).items.size());
-        }
-    }
-
-    void addRow(long diffMin, int count) {
-        Vector v = new Vector(4);
-        v.add(0, diffMin);
-        v.add(1, count);
-        content.add(v);
-    }
-
-    public String getColumnName(int col) {
-        return title_name[col];
-    }
-
-    public int getColumnCount() {
-        return title_name.length;
-    }
-
-    public int getRowCount() {
-        return content.size();
-    }
-
-    public Object getValueAt(int row, int col) {
-        return ((Vector) content.get(row)).get(col);
-    }
-
-}
 
 
