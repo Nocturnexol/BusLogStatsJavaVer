@@ -1,6 +1,7 @@
 package com.bs;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
@@ -15,14 +16,11 @@ class Main {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
     public static void main(String[] args) throws IOException, ParseException {
-        // write your code here
-        List srcList = getSrcList();
-        new StatsFrame(srcList);
-        System.out.println(srcList.size());
+        new StatsFrame();
     }
 
-    private static List getSrcList() throws IOException, ParseException {
-        List fileList = fileToList();
+    static List getSrcList(File file) throws IOException, ParseException {
+        List fileList = fileToList(file);
         List list = orderByAll(fileList, Comparator.comparing(BusData::getLineCode), Comparator.comparing
                 (BusData::getDirection), Comparator.comparing(BusData::getStationNum), Comparator.comparing
                 (BusData::getStationCode), Comparator.comparing(BusData::getVehCode), Comparator.comparing
@@ -69,12 +67,12 @@ class Main {
      * @throws IOException    IOException
      * @throws ParseException ParseException
      */
-    private static List fileToList() throws IOException, ParseException {
+    private static List fileToList(File file) throws IOException, ParseException {
         List res = new ArrayList<BusData>();
 //        BufferedReader br = new BufferedReader(new FileReader(Main.class.getResource("").getPath() + "\\data.txt"));
 //        BufferedReader br=new BufferedReader(new InputStreamReader(Main.class.getClass().getResourceAsStream("data
 // .txt")));
-        BufferedReader br = new BufferedReader(new FileReader(System.getProperty("user.dir") + "\\data.txt"));
+        BufferedReader br = new BufferedReader(new FileReader(file));
         String line;
         while ((line = br.readLine()) != null) {
             String[] arr = line.split("\\|");

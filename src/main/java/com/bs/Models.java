@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Vector;
 
@@ -71,10 +72,20 @@ class TableModelStats extends TableModel {
         List statsList = orderBy(map(groupBy(list, BusDataStats::getTimeDiffMin), (Function<Group<Long,
                         BusDataStats>, Tuple<Long, Group<Long, BusDataStats>>>) g -> new Tuple<>(g.key, g)),
                 (Function<Tuple<Long, Group<Long, BusDataStats>>, Comparable>) t -> t.A);
+        int total = 0;
+        int rangeCount = 0;
         for (Object o : statsList) {
             Tuple tuple = (Tuple<Long, Group<Long, BusDataStats>>) o;
-            addRow((long) tuple.A, ((Group<Long, BusDataStats>) tuple.B).items.size());
+            long diffMin = (long) tuple.A;
+            int count = ((Group<Long, BusDataStats>) tuple.B).items.size();
+            addRow(diffMin, count);
+            if (diffMin >= -1 && diffMin <= 1)
+                rangeCount += count;
+            total += count;
         }
+        NumberFormat nf = NumberFormat.getPercentInstance();
+        nf.setMinimumFractionDigits(2);
+        System.out.println(String.format("-1 ~ 1 所占百分比：%s", nf.format((double) rangeCount / total)));
     }
 
     private void addRow(long diffMin, int count) {
