@@ -21,7 +21,7 @@ class DecoratedTable extends JTable {
         this.setBackground(Color.white);
         DefaultTableCellRenderer tcr = new DefaultTableCellRenderer();
         tcr.setHorizontalAlignment(SwingConstants.CENTER);
-        tcr.setBackground(new Color(202, 234, 206));
+        tcr.setBackground(new Color(204, 232, 207));
         this.setFont(new Font("Tahoma", Font.PLAIN, 15));
         this.setDefaultRenderer(Object.class, tcr);
         this.getTableHeader().setReorderingAllowed(false);
