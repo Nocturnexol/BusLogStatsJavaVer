@@ -26,23 +26,22 @@ class StatsFrame extends JFrame {
             FileFilter filter = new TxtFileFilter();
             jfc.addChoosableFileFilter(filter);
             jfc.setFileFilter(filter);
+            jfc.setAcceptAllFileFilterUsed(false);
             int returnVal = jfc.showOpenDialog(StatsFrame.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = jfc.getSelectedFile();
                 String fileName = file.getName();
                 System.out.println(fileName);
-                if (fileName.toLowerCase().endsWith(".txt")) {
-                    try {
-                        List list = Main.getSrcList(file);
-                        spStats = new JScrollPane(new DecoratedTable(new TableModelStats(list)));
-                        spMatrix = new JScrollPane(new DecoratedTable(new TableModelMatrix(list)));
-                        tabbedPane.removeAll();
-                        tabbedPane.add(spStats, "统计表");
-                        tabbedPane.add(spMatrix, "矩阵表");
-                        this.pack();
-                    } catch (IOException | ParseException ex) {
-                        ex.printStackTrace();
-                    }
+                try {
+                    List list = Main.getSrcList(file);
+                    spStats = new JScrollPane(new DecoratedTable(new TableModelStats(list)));
+                    spMatrix = new JScrollPane(new DecoratedTable(new TableModelMatrix(list)));
+                    tabbedPane.removeAll();
+                    tabbedPane.add(spStats, "统计表");
+                    tabbedPane.add(spMatrix, "矩阵表");
+                    this.pack();
+                } catch (IOException | ParseException ex) {
+                    ex.printStackTrace();
                 }
             }
         });
