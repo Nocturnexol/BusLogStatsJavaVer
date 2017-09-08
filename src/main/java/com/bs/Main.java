@@ -15,8 +15,8 @@ import static net.servicestack.func.Func.*;
 class Main {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
-    public static void main(String[] args) throws IOException, ParseException {
-        new StatsFrame();
+    public static void main(String[] args) {
+        new StatsFrame("BusLogStats");
     }
 
     static List getSrcList(File file) throws IOException, ParseException {

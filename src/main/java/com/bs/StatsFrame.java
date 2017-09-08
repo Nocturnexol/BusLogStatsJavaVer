@@ -16,8 +16,8 @@ class StatsFrame extends JFrame implements ActionListener {
     private JTabbedPane tabbedPane = new JTabbedPane();
     private JButton chooseBtn;
 
-    StatsFrame() {
-        super("BusDataStats");
+    StatsFrame(String title) {
+        super(title);
         spStats = new JScrollPane();
         spMatrix = new JScrollPane();
         tabbedPane.add(spStats, "统计表");
