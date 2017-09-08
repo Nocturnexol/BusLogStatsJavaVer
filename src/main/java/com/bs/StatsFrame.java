@@ -26,9 +26,9 @@ class StatsFrame extends JFrame {
             FileFilter filter = new TxtFileFilter();
             jfc.addChoosableFileFilter(filter);
             jfc.setFileFilter(filter);
-            jfc.showDialog(this, "选择");
-            File file = jfc.getSelectedFile();
-            if (file != null) {
+            int returnVal = jfc.showOpenDialog(StatsFrame.this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = jfc.getSelectedFile();
                 String fileName = file.getName();
                 System.out.println(fileName);
                 if (fileName.toLowerCase().endsWith(".txt")) {
