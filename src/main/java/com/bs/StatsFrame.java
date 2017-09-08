@@ -3,15 +3,18 @@ package com.bs;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
-class StatsFrame extends JFrame {
+class StatsFrame extends JFrame implements ActionListener {
     private JScrollPane spStats;
     private JScrollPane spMatrix;
     private JTabbedPane tabbedPane = new JTabbedPane();
+    private JButton chooseBtn;
 
     StatsFrame() {
         super("BusDataStats");
@@ -19,8 +22,19 @@ class StatsFrame extends JFrame {
         spMatrix = new JScrollPane();
         tabbedPane.add(spStats, "统计表");
         tabbedPane.add(spMatrix, "矩阵表");
-        JButton btn = new JButton("选择文件");
-        btn.addActionListener(e -> {
+        chooseBtn = new JButton("选择文件");
+        chooseBtn.addActionListener(this);
+        this.getContentPane().add(tabbedPane, BorderLayout.CENTER);
+        this.getContentPane().add(chooseBtn, BorderLayout.SOUTH);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setSize(450, 300);
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == chooseBtn) {
             JFileChooser jfc = new JFileChooser(".");
             jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
             FileFilter filter = new TxtFileFilter();
@@ -44,13 +58,7 @@ class StatsFrame extends JFrame {
                     ex.printStackTrace();
                 }
             }
-        });
-        this.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-        this.getContentPane().add(btn, BorderLayout.SOUTH);
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setSize(450, 300);
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
+        }
     }
 }
 
