@@ -66,6 +66,7 @@ class StatsFrame extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "统计完成，耗时" + excTime + "秒");
                 } catch (IOException | ParseException ex) {
                     ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } else if (e.getSource() == exportBtn) {
@@ -75,7 +76,10 @@ class StatsFrame extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "导出成功！");
                 } catch (IOException ex) {
                     ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
                 }
+            } else {
+                JOptionPane.showMessageDialog(this, "请先选择文件！", "提示", JOptionPane.WARNING_MESSAGE);
             }
         }
     }
