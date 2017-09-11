@@ -40,7 +40,7 @@ class TableModel extends AbstractTableModel {
         this.content = content;
     }
 
-    public List getTitleName() {
+    public Vector getTitleName() {
         return titleName;
     }
 
@@ -66,7 +66,7 @@ class TableModel extends AbstractTableModel {
 }
 
 class TableModelStats extends TableModel {
-    TableModelStats(List list) {
+    TableModelStats(List list, ResultBean resultBean) {
         this.setTitleName(new Vector(toList("TimeDiffMin", "Count")));
         this.setContent(new Vector(list.size()));
         List statsList = orderBy(map(groupBy(list, BusDataStats::getTimeDiffMin), (Function<Group<Long,
@@ -85,7 +85,10 @@ class TableModelStats extends TableModel {
         }
         NumberFormat nf = NumberFormat.getPercentInstance();
         nf.setMinimumFractionDigits(2);
-        System.out.println(String.format("-1 ~ 1 所占百分比：%s", nf.format((double) rangeCount / total)));
+        String ratio = nf.format((double) rangeCount / total);
+        System.out.println(String.format("-1 ~ 1 所占百分比：%s", ratio));
+        resultBean.setRatio(ratio);
+        resultBean.setTotal(total);
     }
 
     private void addRow(long diffMin, int count) {
@@ -130,4 +133,30 @@ class TableModelMatrix extends TableModel {
 
     }
 
+}
+
+/**
+ * 返回结果类
+ *
+ * @author xyf
+ */
+class ResultBean {
+    private int total;
+    private String ratio;
+
+    int getTotal() {
+        return total;
+    }
+
+    void setTotal(int total) {
+        this.total = total;
+    }
+
+    String getRatio() {
+        return ratio;
+    }
+
+    void setRatio(String ratio) {
+        this.ratio = ratio;
+    }
 }

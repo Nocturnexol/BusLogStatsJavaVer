@@ -11,21 +11,26 @@ import java.text.ParseException;
 import java.util.List;
 
 class StatsFrame extends JFrame implements ActionListener {
-    private JScrollPane spStats;
-    private JScrollPane spMatrix;
+    private TableModelMatrix tableModelMatrix;
+    private String fileName;
+    private ResultBean res = new ResultBean();
+    private JScrollPane spStats = new JScrollPane();
+    private JScrollPane spMatrix = new JScrollPane();
     private JTabbedPane tabbedPane = new JTabbedPane();
-    private JButton chooseBtn;
+    private JButton chooseBtn = new JButton("选择文件");
+    private JButton exportBtn = new JButton("导出EXCEL");
 
     StatsFrame(String title) {
         super(title);
-        spStats = new JScrollPane();
-        spMatrix = new JScrollPane();
         tabbedPane.add(spStats, "统计表");
         tabbedPane.add(spMatrix, "矩阵表");
-        chooseBtn = new JButton("选择文件");
         chooseBtn.addActionListener(this);
+        exportBtn.addActionListener(this);
+        JPanel pnl = new JPanel();
+        pnl.add(exportBtn);
+        pnl.add(chooseBtn);
         this.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-        this.getContentPane().add(chooseBtn, BorderLayout.SOUTH);
+        this.getContentPane().add(pnl, BorderLayout.SOUTH);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setSize(450, 300);
         this.setLocationRelativeTo(null);
@@ -44,17 +49,31 @@ class StatsFrame extends JFrame implements ActionListener {
             int returnVal = jfc.showOpenDialog(StatsFrame.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = jfc.getSelectedFile();
-                String fileName = file.getName();
+                fileName = file.getName();
                 System.out.println(fileName);
                 try {
+                    long startTime = System.currentTimeMillis();
                     List list = Main.getSrcList(file);
-                    spStats = new JScrollPane(new DecoratedTable(new TableModelStats(list)));
-                    spMatrix = new JScrollPane(new DecoratedTable(new TableModelMatrix(list)));
+                    spStats = new JScrollPane(new DecoratedTable(new TableModelStats(list, res)));
+                    tableModelMatrix = new TableModelMatrix(list);
+                    spMatrix = new JScrollPane(new DecoratedTable(tableModelMatrix));
                     tabbedPane.removeAll();
                     tabbedPane.add(spStats, "统计表");
                     tabbedPane.add(spMatrix, "矩阵表");
                     this.pack();
+                    long endTime = System.currentTimeMillis();
+                    float excTime = (float) (endTime - startTime) / 1000;
+                    JOptionPane.showMessageDialog(this, "统计完成，耗时" + excTime + "秒");
                 } catch (IOException | ParseException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } else if (e.getSource() == exportBtn) {
+            if (tableModelMatrix != null) {
+                try {
+                    ExcelHelper.export(tableModelMatrix, fileName, res);
+                    JOptionPane.showMessageDialog(this, "导出成功！");
+                } catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }
