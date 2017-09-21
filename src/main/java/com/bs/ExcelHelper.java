@@ -21,6 +21,7 @@ class ExcelHelper {
     static void export(TableModelMatrix model, String fileName, ResultBean res) throws IOException {
         Vector titles = model.getTitleName();
         Vector contents = model.getContent();
+        // prevent from multi-sheet
         if (wb.getNumberOfSheets() > 0) {
             for (int i = 0; i < wb.getNumberOfSheets(); i++) {
                 wb.removeSheetAt(i);
