@@ -4,29 +4,32 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
-class ExcelHelper {
+final class ExcelHelper {
+    private static CellStyle cellStyle;
+    private static CellStyle boldStyle;
+    private static CellStyle filledStyle;
+    private static CellStyle leftAlignStyle;
 
-    private static Workbook wb = new HSSFWorkbook();
-    private static CellStyle cellStyle = getCellStyle(wb, false, HorizontalAlignment.CENTER, FillPatternType.NO_FILL);
-    private static CellStyle boldStyle = getCellStyle(wb, true, HorizontalAlignment.CENTER, FillPatternType.NO_FILL);
-    private static CellStyle filledStyle = getCellStyle(wb, false, HorizontalAlignment.CENTER, FillPatternType
-            .SOLID_FOREGROUND);
-    private static CellStyle leftAlignStyle = getCellStyle(wb, false, HorizontalAlignment.LEFT, FillPatternType
-            .NO_FILL);
-
-    static void export(TableModelMatrix model, String fileName, ResultBean res) throws IOException {
+    static void export(TableModelMatrix model) throws IOException {
         Vector titles = model.getTitleName();
         Vector contents = model.getContent();
-        // prevent from multi-sheet
-        if (wb.getNumberOfSheets() > 0) {
-            for (int i = 0; i < wb.getNumberOfSheets(); i++) {
-                wb.removeSheetAt(i);
-            }
-        }
+
+        Workbook wb = new HSSFWorkbook();
+        cellStyle = getCellStyle(wb);
+        boldStyle = getBoldStyle(wb);
+        filledStyle = getFilledStyle(wb);
+        leftAlignStyle = getLeftAlignStyle(wb);
+
         // create a new sheet
         Sheet sheet = wb.createSheet();
         // declare a row object reference
@@ -35,7 +38,7 @@ class ExcelHelper {
         Cell c;
         int lastCol = ((Vector) contents.get(0)).size();
 
-        initHeader(sheet, lastCol, res);
+        initHeader(sheet, lastCol, model);
 
         // Titles
         r = sheet.createRow(2);
@@ -79,20 +82,59 @@ class ExcelHelper {
             sheet.autoSizeColumn(i);
         }
         // Save
-        FileOutputStream out = new FileOutputStream(fileName.replaceAll(".txt", "") + ".xls");
+        FileOutputStream out = new FileOutputStream(model.getFileName().replaceAll(".txt", "") + ".xls");
         wb.write(out);
         out.close();
 
     }
+
+    static void bulkExport(File path) throws IOException {
+        if (!path.isDirectory()) return;
+        File[] dirs = path.listFiles();
+        if (dirs == null || dirs.length == 0) return;
+        HashMap<String, Workbook> hMap = new HashMap<>();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        for (File dir : dirs) {
+            if (!dir.isDirectory()) continue;
+            String dirName = dir.getName();
+            try {
+                df.parse(dirName);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                continue;
+            }
+            File[] txtFiles = dir.listFiles();
+            if (txtFiles == null || txtFiles.length == 0) continue;
+            for (File txt : txtFiles) {
+                if (!txt.isFile()) continue;
+                String fileName = txt.getName();
+                //get current workbook by the file name
+                //a new instance will be created if not existing
+                Workbook wb = hMap.computeIfAbsent(fileName, k -> new HSSFWorkbook());
+                Sheet sheet = wb.createSheet(dirName);
+
+            }
+        }
+        //export all workbooks
+        for (Object o : hMap.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
+            Object key = entry.getKey();
+            Workbook val = (Workbook) entry.getValue();
+            FileOutputStream fs = new FileOutputStream("excels/" + key);
+            val.write(fs);
+            fs.close();
+        }
+
+    }
+
 
     /**
      * 初始化表头
      *
      * @param sheet   sheet
      * @param lastCol 最后一列索引数
-     * @param res     res
      */
-    private static void initHeader(Sheet sheet, int lastCol, ResultBean res) {
+    private static void initHeader(Sheet sheet, int lastCol, BusTableModel tbl) {
         Row r = sheet.createRow(0);
         Cell c;
         for (int i = 0; i <= lastCol; i++) {
@@ -104,7 +146,7 @@ class ExcelHelper {
                 c.setCellValue("数据日期：");
                 c.setCellStyle(leftAlignStyle);
             } else if (i == 8) {
-                c.setCellValue("数据量：" + res.getTotal() + "  百分比：" + res.getRatio());
+                c.setCellValue("数据量：" + tbl.getTotal() + "  百分比：" + tbl.getRatio());
                 c.setCellStyle(leftAlignStyle);
             } else {
                 c.setCellStyle(cellStyle);
@@ -124,24 +166,44 @@ class ExcelHelper {
         }
     }
 
-    private static CellStyle getCellStyle(Workbook wb, boolean isBold, HorizontalAlignment hAlign, FillPatternType
-            fillType) {
+    private static CellStyle getCellStyle(Workbook wb) {
         CellStyle cellStyle = wb.createCellStyle();
-        cellStyle.setAlignment(hAlign);
         cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         cellStyle.setBorderTop(BorderStyle.THIN);
         cellStyle.setBorderLeft(BorderStyle.THIN);
         cellStyle.setBorderRight(BorderStyle.THIN);
         cellStyle.setBorderBottom(BorderStyle.THIN);
         cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        cellStyle.setFillPattern(fillType);
         cellStyle.setWrapText(true);
         Font f = wb.createFont();
         f.setFontName("宋体");
         f.setFontHeightInPoints((short) 12);
-        f.setBold(isBold);
         cellStyle.setFont(f);
         return cellStyle;
     }
 
+    private static CellStyle getBoldStyle(Workbook wb) {
+        CellStyle cellStyle = getCellStyle(wb);
+        Font f = wb.getFontAt((short) 0);
+        if (f == null) {
+            f = wb.createFont();
+            f.setFontName("宋体");
+            f.setFontHeightInPoints((short) 12);
+        }
+        f.setBold(true);
+        cellStyle.setFont(f);
+        return cellStyle;
+    }
+
+    private static CellStyle getFilledStyle(Workbook wb) {
+        CellStyle cellStyle = getCellStyle(wb);
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        return cellStyle;
+    }
+
+    private static CellStyle getLeftAlignStyle(Workbook wb) {
+        CellStyle cellStyle = getCellStyle(wb);
+        cellStyle.setAlignment(HorizontalAlignment.LEFT);
+        return cellStyle;
+    }
 }

@@ -12,6 +12,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="client-1.0.33" level="project" />
-    <orderEntry type="library" exported="" name="poi-3" level="project" />
+    <orderEntry type="library" name="poi-3" level="project" />
   </component>
 </module>

@@ -28,10 +28,30 @@ class DecoratedTable extends JTable {
     }
 }
 
-class TableModel extends AbstractTableModel {
+
+class BusTableModel extends AbstractTableModel {
     private Vector content;
     private Vector titleName;
 
+    private int total;
+    private String ratio;
+    private String fileName;
+
+    int getTotal() {
+        return total;
+    }
+
+    void setTotal(int total) {
+        this.total = total;
+    }
+
+    String getRatio() {
+        return ratio;
+    }
+
+    void setRatio(String ratio) {
+        this.ratio = ratio;
+    }
     public Vector getContent() {
         return content;
     }
@@ -63,10 +83,18 @@ class TableModel extends AbstractTableModel {
     public Object getValueAt(int row, int col) {
         return ((Vector) content.get(row)).get(col);
     }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 }
 
-class TableModelStats extends TableModel {
-    TableModelStats(List list, ResultBean resultBean) {
+class TableModelStats extends BusTableModel {
+    TableModelStats(List list) {
         this.setTitleName(new Vector(toList("TimeDiffMin", "Count")));
         this.setContent(new Vector(list.size()));
         List statsList = orderBy(map(groupBy(list, BusDataStats::getTimeDiffMin), (Function<Group<Long,
@@ -87,8 +115,8 @@ class TableModelStats extends TableModel {
         nf.setMinimumFractionDigits(2);
         String ratio = nf.format((double) rangeCount / total);
         System.out.println(String.format("-1 ~ 1 所占百分比：%s", ratio));
-        resultBean.setRatio(ratio);
-        resultBean.setTotal(total);
+        this.setRatio(ratio);
+        this.setTotal(total);
     }
 
     private void addRow(long diffMin, int count) {
@@ -99,7 +127,7 @@ class TableModelStats extends TableModel {
     }
 }
 
-class TableModelMatrix extends TableModel {
+class TableModelMatrix extends BusTableModel {
     TableModelMatrix(List list) {
         int minDiff = (int) Math.floor(min(list, (Function<BusDataStats, Integer>) t -> new Long(t.getTimeDiffMin())
                 .intValue()));
@@ -133,30 +161,4 @@ class TableModelMatrix extends TableModel {
 
     }
 
-}
-
-/**
- * 返回结果类
- *
- * @author xyf
- */
-class ResultBean {
-    private int total;
-    private String ratio;
-
-    int getTotal() {
-        return total;
-    }
-
-    void setTotal(int total) {
-        this.total = total;
-    }
-
-    String getRatio() {
-        return ratio;
-    }
-
-    void setRatio(String ratio) {
-        this.ratio = ratio;
-    }
 }

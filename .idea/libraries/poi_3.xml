@@ -1,16 +1,16 @@
 <component name="libraryTable">
   <library name="poi-3">
     <CLASSES>
-      <root url="file://$USER_HOME$/Downloads/poi-3.16" />
-      <root url="file://$USER_HOME$/Downloads/poi-3.16/ooxml-lib" />
-      <root url="file://$USER_HOME$/Downloads/poi-3.16/lib" />
+      <root url="file://F:/Downloads/poi-3.16" />
+      <root url="file://F:/Downloads/poi-3.16/ooxml-lib" />
+      <root url="file://F:/Downloads/poi-3.16/lib" />
     </CLASSES>
     <JAVADOC>
-      <root url="file://$USER_HOME$/Downloads/poi-3.16/docs/apidocs" />
+      <root url="file://F:/Downloads/poi-3.16/docs/apidocs" />
     </JAVADOC>
     <SOURCES />
-    <jarDirectory url="file://$USER_HOME$/Downloads/poi-3.16" recursive="false" />
-    <jarDirectory url="file://$USER_HOME$/Downloads/poi-3.16/lib" recursive="false" />
-    <jarDirectory url="file://$USER_HOME$/Downloads/poi-3.16/ooxml-lib" recursive="false" />
+    <jarDirectory url="file://F:/Downloads/poi-3.16" recursive="false" />
+    <jarDirectory url="file://F:/Downloads/poi-3.16/lib" recursive="false" />
+    <jarDirectory url="file://F:/Downloads/poi-3.16/ooxml-lib" recursive="false" />
   </library>
 </component>
