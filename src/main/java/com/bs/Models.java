@@ -129,13 +129,13 @@ class TableModelStats extends BusTableModel {
 
 class TableModelMatrix extends BusTableModel {
     TableModelMatrix(List list) {
-        int minDiff = (int) Math.floor(min(list, (Function<BusDataStats, Integer>) t -> new Long(t.getTimeDiffMin())
+        int minDiff = (int) Math.floor(min(list, (Function<BusDataStats, Integer>) t -> Long.valueOf(t.getTimeDiffMin())
                 .intValue()));
         minDiff = minDiff % 2 == 0 ? minDiff : minDiff - 1;
-        int maxDiff = (int) Math.ceil(max(list, (Function<BusDataStats, Integer>) t -> new Long(t.getTimeDiffMin())
+        int maxDiff = (int) Math.ceil(max(list, (Function<BusDataStats, Integer>) t -> Long.valueOf(t.getTimeDiffMin())
                 .intValue()));
         maxDiff = maxDiff % 2 == 0 ? maxDiff + 2 : maxDiff + 1;
-        int maxTotal = (int) Math.ceil(max(list, (Function<BusDataStats, Integer>) t -> new Long(t.getActualTotalMin
+        int maxTotal = (int) Math.ceil(max(list, (Function<BusDataStats, Integer>) t -> Long.valueOf(t.getActualTotalMin
                 ()).intValue()));
         maxTotal = maxTotal % 2 == 0 ? maxTotal + 2 : maxTotal + 1;
         int colCount = maxTotal / 2;

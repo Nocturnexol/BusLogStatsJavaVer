@@ -24,72 +24,36 @@ public class BusDataStats {
         return res < -1000 ? res + 1440 : res;
     }
 
-    public String getLineCode() {
-        return lineCode;
-    }
-
     public void setLineCode(String lineCode) {
         this.lineCode = lineCode;
-    }
-
-    public Direction getDirection() {
-        return direction;
     }
 
     public void setDirection(Direction direction) {
         this.direction = direction;
     }
 
-    public int getStationNum() {
-        return stationNum;
-    }
-
     public void setStationNum(int stationNum) {
         this.stationNum = stationNum;
-    }
-
-    public String getStationCode() {
-        return stationCode;
     }
 
     public void setStationCode(String stationCode) {
         this.stationCode = stationCode;
     }
 
-    public String getVehCode() {
-        return vehCode;
-    }
-
     public void setVehCode(String vehCode) {
         this.vehCode = vehCode;
-    }
-
-    public Date getFirstEstimatedTime() {
-        return firstEstimatedTime;
     }
 
     public void setFirstEstimatedTime(Date firstEstimatedTime) {
         this.firstEstimatedTime = firstEstimatedTime;
     }
 
-    public Date getLastEstimatedTime() {
-        return lastEstimatedTime;
-    }
-
     public void setLastEstimatedTime(Date lastEstimatedTime) {
         this.lastEstimatedTime = lastEstimatedTime;
     }
 
-    public Date getFirstProcessTime() {
-        return firstProcessTime;
-    }
-
     public void setFirstProcessTime(Date firstProcessTime) {
         this.firstProcessTime = firstProcessTime;
-    }
-
-    public Date getLastProcessTime() {
-        return lastProcessTime;
     }
 
     public void setLastProcessTime(Date lastProcessTime) {

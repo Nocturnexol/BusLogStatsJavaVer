@@ -74,6 +74,7 @@ class StatsFrame extends JFrame implements ActionListener {
                     long endTime = System.currentTimeMillis();
                     float excTime = (float) (endTime - startTime) / 1000;
                     JOptionPane.showMessageDialog(this, "统计完成，耗时" + excTime + "秒");
+                    System.out.println("耗时" + excTime + "秒");
                 } catch (IOException | ParseException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(this, ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
